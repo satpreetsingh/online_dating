@@ -22,7 +22,7 @@ def main():
         print "Eg. $ python okcupid_profile_versioner.py my_username"
         exit()
 
-    file_name = "profile_okcupid_{}.html".format(username)
+    file_name = "profile_okcupid_{}.html".format(username.lower())
     file_path = "../okcupid/"
 
     # First, try posting login credentials to the site.
