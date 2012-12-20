@@ -38,7 +38,7 @@ def main():
     
     list_of_divs = ['essay_text_0', 'essay_text_1', 'essay_text_2', 
         'essay_text_3', 'essay_text_4', 'essay_text_5', 'essay_text_6', 
-        'essay_text_7', 'essay_text_8', 'essay_text_9']
+        'essay_text_7', 'essay_text_8', 'what_i_want', 'essay_text_9']
     soup = BeautifulSoup(r.text)
     #print r.text
 
