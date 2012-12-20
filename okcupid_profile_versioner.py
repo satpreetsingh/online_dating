@@ -3,16 +3,21 @@ import requests
 from bs4 import BeautifulSoup
 import sys
 
+def login_as_user_and_get_response(session, url, login_info):
+    p = session.post(url, data=login_info)
+    authlink_cookie = p.cookies['authlink']
+    # OkCupid does not give the 'session' cookie, but it seems to work anyway.
+    logged_in_cookies = {"authlink":authlink_cookie}
+    return logged_in_cookies
+
 def main():
     """First, parse command line arguments.
     Arguments are: 
         username
     """
-
     try:
         username = sys.argv[1]
     except IndexError:
-        #raise Exception("Must specify a username.")
         print "Must specify a username. Type your username as the first argument."
         print "Eg. $ python okcupid_profile_versioner.py my_username"
         exit()
@@ -22,14 +27,12 @@ def main():
 
     # First, try posting login credentials to the site.
     # Note: Put in information for a dummy account!
-    login_info = {"username":"sandy_asaurus", "password":"sandyman", "p":"", "dest":""}
+    # Note: The empty 'p' and 'dest' keys are absolutely required.
     session = requests.session()
-    p = session.post("http://www.okcupid.com/login", data=login_info)
-    print p
-    authlink_cookie = p.cookies['authlink']
-    print p.cookies['authlink']
-    # OkCupid is not giving me the session cookie. Perhaps the session may not be needed?
-    logged_in_cookies = {"authlink":authlink_cookie}
+    login_info = {"username":"sandy_asaurus", "password":"sandyman", "p":"", "dest":""}
+    logged_in_cookies = login_as_user_and_get_response(session, 
+        "http://www.okcupid.com/login", 
+        login_info)
 
     r = session.get('http://www.okcupid.com/profile/{}'.format(username), cookies=logged_in_cookies)
     
@@ -37,7 +40,7 @@ def main():
         'essay_text_3', 'essay_text_4', 'essay_text_5', 'essay_text_6', 
         'essay_text_7', 'essay_text_8', 'essay_text_9']
     soup = BeautifulSoup(r.text)
-    print r.text
+    #print r.text
 
     html_output = ""
     for div_id in list_of_divs:
