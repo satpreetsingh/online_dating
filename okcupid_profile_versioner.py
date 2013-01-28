@@ -2,10 +2,19 @@
 import requests
 from bs4 import BeautifulSoup
 import sys
+from pprint import pprint
 
 def login_as_user_and_get_response(session, url, login_info):
     p = session.post(url, data=login_info)
-    authlink_cookie = p.cookies['authlink']
+    try:
+        authlink_cookie = p.cookies['authlink']
+    except KeyError:
+        pprint(dir(p.cookies))
+        print """
+        Failed to log in! OkCupid might be down, or the account might be disabled.
+        Try logging in manually to see if the site is up. If so, this program's default account is likely disabled/deleted.
+        """
+        exit()
     # OkCupid does not give the 'session' cookie, but it seems to work anyway.
     logged_in_cookies = {"authlink":authlink_cookie}
     return logged_in_cookies
@@ -29,9 +38,11 @@ def main():
     # Note: Put in information for a dummy account!
     # Note: The empty 'p' and 'dest' keys are absolutely required.
     session = requests.session()
-    login_info = {"username":"sandy_asaurus", "password":"sandyman", "p":"", "dest":""}
+    # 'testuser' and 'testpassword' need to be replaced with new test account
+    # details
+    login_info = {"username":"testuser", "password":"testpassword", "p":"", "dest":""}
     logged_in_cookies = login_as_user_and_get_response(session, 
-        "http://www.okcupid.com/login", 
+        "https://www.okcupid.com/login", 
         login_info)
 
     r = session.get('http://www.okcupid.com/profile/{}'.format(username), cookies=logged_in_cookies)
